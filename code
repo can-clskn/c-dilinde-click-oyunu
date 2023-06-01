@@ -1,0 +1,264 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace sifir
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        int ilk = 1;
+        Panel ust_duvar = new Panel(); //alanın duvarlarını oluşturuyoruz.
+        Panel alt_duvar = new Panel(); //alanın duvarlarını oluşturuyoruz. 
+        Panel sag_duvar = new Panel(); //alanın duvarlarını oluşturuyoruz.
+        Panel sol_duvar = new Panel(); //alanın duvarlarını oluşturuyoruz.
+        
+        Button buton1 = new Button();    // aşağı inecek nesneleri click kullanacağımızdan nesne olarak tanımlıyoruz.
+        Button buton2 = new Button();   // aşağı inecek nesneleri click kullanacağımızdan nesne olarak tanımlıyoruz.
+        Button buton3 = new Button();    // aşağı inecek nesneleri click kullanacağımızdan nesne olarak tanımlıyoruz.
+        Timer tetik = new Timer();
+        Label label1 = new Label();     // oyunun bittiğine dair bilgiyi ekrana yazdırmak için label kullanıyoruz.
+        Label label2 = new Label();     // skora dair bilgiyi ekrana yazdırmak için label kullanıyoruz.
+
+        int yyon = 1;
+        int skor = 0;
+        
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (ilk == 1)
+            {
+                
+                ilk = 0;
+                tetik.Tick += Tetik_Tick;
+                tetik.Interval = 1;
+                tetik.Enabled = true;
+                buton1.Click += Buton1_Click;
+                buton2.Click += Buton2_Click;
+                buton3.Click += Buton3_Click;
+
+
+                this.Controls.Add(buton1);
+                Random rnd1 = new Random(); // rastgele sayı üretmek için randomu kullanıyoruz.
+                int sayi1 = rnd1.Next(50, 100); // rastgele sayıyı takibindeki 3 satırda verdiğimiz değerler arasında oluşturuyoruz.
+                int sayi2 = rnd1.Next(111, 510 - sayi1);
+                int sayi3 = rnd1.Next(20, 50);
+                buton1.Left = sayi2; //butonun (nesne 1'in) alan , renk ve konum bilgilerini takibindeki 5 satırda veriyoruz.
+                buton1.BackColor = Color.Green;
+                buton1.Height = sayi3;
+                buton1.Width = sayi1;
+                buton1.Top = 50;
+
+                this.Controls.Add(buton2);
+                Random rnd2 = new Random(); // rastgele sayı üretmek için randomu kullanıyoruz.
+                int sayi4 = rnd2.Next(50, 100); // rastgele sayıyı takibindeki 3 satırda verdiğimiz değerler arasında oluşturuyoruz.
+                int sayi5 = rnd2.Next(111, 510 - sayi4);
+                int sayi6 = rnd2.Next(20, 50);
+
+                if (sayi5 == sayi2) // nesnelerin üst üste binmemesi için left değerlerini kontrol ediyoruz.
+                {
+                    Random ikincisans = new Random(); // nesnelerin leftleri aynıysa yeni left değeri oluşturup alan, konum ve renk bilgilerini tekrar giriyoruz.
+                    sayi5 = ikincisans.Next(111, 510 - sayi4);
+                    buton2.Left = sayi5;
+                    buton2.BackColor = Color.Red;
+                    buton2.Height = sayi6;
+                    buton2.Width = sayi4;
+                    buton2.Top = 50;
+                }
+
+                buton2.Left = sayi5; // left değerleri farklıysa buradan devam edip alan , konum ve renk bilgilerini veriyoruz.
+                buton2.BackColor = Color.Red;
+                buton2.Height = sayi6;
+                buton2.Width = sayi4;
+                buton2.Top = 50;
+
+                this.Controls.Add(buton3);
+                Random rnd3 = new Random(); // rastgele sayı üretmek için randomu kullanıyoruz.
+                int sayi7 = rnd2.Next(50, 100); // rastgele sayıyı takibindeki 3 satırda verdiğimiz değerler arasında oluşturuyoruz.
+                int sayi8 = rnd2.Next(111, 510 - sayi7);
+                int sayi9 = rnd2.Next(20, 50);
+                if (sayi8 == sayi2 || sayi8 == sayi5) // nesnelerin üst üste binmemesi için left değerlerini kontrol ediyoruz.
+                {
+                    Random ücüncüsans = new Random(); // nesnelerin leftleri aynıysa yeni left değeri oluşturup alan, konum ve renk bilgilerini tekrar giriyoruz.
+                    sayi8 = ücüncüsans.Next(111, 510 - sayi7);
+                    buton3.Left = sayi8;
+                    buton3.BackColor = Color.Blue;
+                    buton3.Height = sayi9;
+                    buton3.Width = sayi7;
+                    buton3.Top = 50;
+                }
+
+                buton3.Left = sayi8; // left değerleri farklıysa buradan devam edip alan , konum ve renk bilgilerini veriyoruz.
+                buton3.BackColor = Color.Blue;
+                buton3.Height = sayi9;
+                buton3.Width = sayi7;
+                buton3.Top = 50;
+
+
+                this.Controls.Add(ust_duvar); // oyun alanının üst duvar koordinatlarını giriyoruz.
+                ust_duvar.Left = 110;
+                ust_duvar.BackColor = Color.Black;
+                ust_duvar.Height = 10;
+                ust_duvar.Width = 400;
+                ust_duvar.Top = 50;
+
+
+
+                this.Controls.Add(alt_duvar); // oyun alanının alt duvar koordinatlarını giriyoruz.
+                alt_duvar.Left = 110;
+                alt_duvar.BackColor = Color.Black;
+                alt_duvar.Height = 10;
+                alt_duvar.Width = 400;
+                alt_duvar.Top = 390;
+
+                this.Controls.Add(sag_duvar); // oyun alanının sağ duvar koordinatlarını giriyoruz.
+                sag_duvar.Left = 510;
+                sag_duvar.BackColor = Color.Black;
+                sag_duvar.Height = 350;
+                sag_duvar.Width = 10;
+                sag_duvar.Top = 50;
+
+                this.Controls.Add(sol_duvar); // oyun alanının sol duvar koordinatlarını giriyoruz.
+                sol_duvar.Left = 100;
+                sol_duvar.BackColor = Color.Black;
+                sol_duvar.Height = 350;
+                sol_duvar.Width = 10;
+                sol_duvar.Top = 50;
+
+                this.Controls.Add(label1); // oyunu kaybettiğimizde verilecek uyarının koordinatlarını giriyoruz.
+                label1.Left = 250;
+                label1.Height = 100;
+                label1.Width = 200;
+                label1.Top = 170;
+
+                this.Controls.Add(label2); // skoru yazacak olan label'ın koordinatlarını giriyoruz.
+                label2.Left = 600;
+                label2.Height = 50;
+                label2.Width = 150;
+                label2.Top = 200;
+                label2.Text = "SKOR : " + skor.ToString(); // label'ın içinde yazacak mesajı ve skor değişkenini yazıyoruz.
+                label2.Font = new Font("Georgia", 16, FontStyle.Bold); // yazımızın fontunu ve puntosunu giriyoruz.
+            }
+        }
+
+       
+        private void Buton3_Click(object sender, EventArgs e) //nesne 3'e tıklandığında olacak olan işlemleri parantez içerisine yazıyoruz.
+        {
+            
+            skor = skor + 1; // butona tıklandığında skorumuzu arttırıyoruz.
+            this.Controls.Add(buton3);// yeni rastgele değerler bularak cisimi yeniden oluşturuyoruz.
+            Random rnd3 = new Random();
+            int sayi7 = rnd3.Next(50, 100);
+            int sayi8 = rnd3.Next(111, 510 - sayi7);
+            int sayi9 = rnd3.Next(20, 50);
+            buton3.Left = sayi8;
+            buton3.BackColor = Color.Blue;
+            buton3.Height = sayi9;
+            buton3.Width = sayi7;
+            buton3.Top = 50;
+            label2.Text = "SKOR : " + skor.ToString(); //skor bilgisini anlık olarak ekrana yazdırıyoruz.
+            label2.Font = new Font("Georgia", 16, FontStyle.Bold);
+        }
+
+        private void Buton2_Click(object sender, EventArgs e)//nesne 2'ye tıklandığında olacak olan işlemleri parantez içerisine yazıyoruz.
+        {
+           
+            skor = skor + 2; // butona tıklandığında skorumuzu arttırıyoruz.
+            this.Controls.Add(buton2);// yeni rastgele değerler bularak cisimi yeniden oluşturuyoruz.
+            Random rnd2 = new Random();
+            int sayi4 = rnd2.Next(50, 100);
+            int sayi5 = rnd2.Next(111, 510 - sayi4);
+            int sayi6 = rnd2.Next(20, 50);
+            buton2.Left = sayi5;
+            buton2.BackColor = Color.Red;
+            buton2.Height = sayi6;
+            buton2.Width = sayi4;
+            buton2.Top = 50;
+            label2.Text = "SKOR : " + skor.ToString(); //skor bilgisini anlık olarak ekrana yazdırıyoruz.
+            label2.Font = new Font("Georgia", 16, FontStyle.Bold);
+        }
+
+        private void Buton1_Click(object sender, EventArgs e) //nesne 1'e tıklandığında olacak olan işlemleri parantez içerisine yazıyoruz.
+        {
+            
+            skor = skor + 1; // butona tıklandığında skorumuzu arttırıyoruz.
+            this.Controls.Add(buton1);
+            Random rnd1 = new Random(); // yeni rastgele değerler bularak cisimi yeniden oluşturuyoruz.
+            int sayi1 = rnd1.Next(50, 100);
+            int sayi2 = rnd1.Next(111, 510 - sayi1);
+            int sayi3 = rnd1.Next(20, 50);
+            buton1.Left = sayi2;
+            buton1.BackColor = Color.Green;
+            buton1.Height = sayi3;
+            buton1.Width = sayi1;
+            buton1.Top = 50;
+            label2.Text = "SKOR : " + skor.ToString(); //skor bilgisini anlık olarak ekrana yazdırıyoruz.
+            label2.Font = new Font("Georgia", 16, FontStyle.Bold);
+        }
+
+        private void Tetik_Tick(object sender, EventArgs e)
+        {
+
+
+
+            label1.Visible = false; // label1 nesnesi oyunda görüşü etkileyeceği için görünürlüğünü oyun sonu açmak üzere şimdilik kapatıyoruz.
+
+
+            buton1.Top = buton1.Top + yyon; // nesnelerin aşağı inme hızlarını takibindeki 3 satırda giriyoruz. 
+            buton2.Top = buton2.Top + 2 * yyon;
+            buton3.Top = buton3.Top + yyon;
+
+            if (buton1.Bottom == alt_duvar.Top || buton2.Bottom >= alt_duvar.Top || buton3.Bottom == alt_duvar.Top) // oyunun bitmesi için gerekli koşul olan cisimlerin alt duvara değme durumunu sorguluyoruz.
+            {
+                tetik.Enabled = false; // cisim alt duvara değdiyse tetiği enabled duruma getiriyoruz.
+            }
+
+
+            if (tetik.Enabled == false) // oyunu kaybetme durumumuzda olması gerekenleri if parantezinin içine yazıyoruz.
+            {
+                label1.Visible = true;  // görünmez durumdaki label1'i görünür hale getiriyoruz.
+                buton1.Visible = false; // görünür durumdaki engel1'i görünmez hale getiriyoruz.
+                buton2.Visible = false; // görünür durumdaki engel2'yi görünmez hale getiriyoruz.
+                buton3.Visible = false; // görünür durumdaki engel3'ü görünmez hale getiriyoruz.
+                label1.Text = "ÜZGÜNÜM\nKAYBETTİN"; // label1'in metnini yazıyoruz.
+                label1.ForeColor = Color.Red;
+                label1.Font = new Font("Georgia", 16, FontStyle.Bold);
+                label2.Text = "SKOR : " + skor.ToString(); // label2'nin metnini ve skor değerimizi yazıyoruz.
+                this.Controls.Add(label2); // skoru yazacak olan label'ın koordinatlarını giriyoruz.
+                label2.Left = 250;
+                label2.Height = 50;
+                label2.Width = 150;
+                label2.Top = 271;
+                label2.Text = "SKOR : " + skor.ToString();
+                label2.Font = new Font("Georgia", 16, FontStyle.Bold);
+                
+            }
+
+        }
+
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+        
+
+
+
+
+
+
+
+        
+    }
+}
